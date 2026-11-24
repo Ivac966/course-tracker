@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ subject.name }} — {{ group.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 24px;
+            color: #222;
+        }
+        a.back {
+            font-size: 13px;
+            color: #378ADD;
+            text-decoration: none;
+        }
+        h1 {
+            font-size: 20px;
+            margin: 10px 0 20px;
+        }
+        .chapter-list {
+            background: #fff;
+            border-radius: 10px;
+            padding: 8px 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .chapter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .chapter-row:last-child {
+            border-bottom: none;
+        }
+        .chapter-name {
+            font-size: 14px;
+        }
+        .chapter-name.done {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .mark-btn {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        .mark-btn.incomplete {
+            background: #378ADD;
+            color: #fff;
+        }
+        .mark-btn.complete {
+            background: #e9ecef;
+            color: #333;
+        }
+        .add-form {
+            margin-top: 20px;
+            display: flex;
+            gap: 8px;
+        }
+        .add-form input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .add-form button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            background: #1D9E75;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <a class="back" href="{{ url_for('dashboard') }}">&larr; Back to dashboard</a>
+    <h1>{{ subject.name }} — {{ group.name }} group</h1>
+
+    <div class="chapter-list">
+        {% for ch in chapters %}
+        <div class="chapter-row">
+            <span class="chapter-name {% if ch.completed %}done{% endif %}">{{ ch.name }}</span>
+            <form method="POST" action="{{ url_for('mark_chapter', group_id=group.id, chapter_id=ch.id) }}">
+                <button type="submit" class="mark-btn {% if ch.completed %}complete{% else %}incomplete{% endif %}">
+                    {% if ch.completed %}Completed{% else %}Mark done{% endif %}
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <p style="color:#888; font-size:14px; padding:12px 0;">No chapters added yet.</p>
+        {% endfor %}
+    </div>
+
+    <form class="add-form" method="POST" action="{{ url_for('add_chapter', subject_id=subject.id) }}">
+        <input type="hidden" name="group_id" value="{{ group.id }}">
+        <input type="text" name="name" placeholder="New chapter name" required>
+        <button type="submit">Add</button>
+    </form>
+</body>
+</html>
