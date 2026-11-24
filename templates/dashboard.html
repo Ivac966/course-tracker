@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Course Coverage Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f2f8;
+            margin: 0;
+            padding: 32px 40px;
+            color: #22263a;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+        h1 {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+        .subtitle {
+            color: #8891a7;
+            font-size: 13px;
+        }
+        .top-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary {
+            background: linear-gradient(135deg, #3a5ba0, #1f2b6c);
+            color: #fff;
+        }
+        .btn-ghost {
+            background: #fff;
+            color: #3a5ba0;
+            border: 1.5px solid #dfe3ee;
+        }
+        .btn:hover { opacity: 0.9; }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .metric-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 22px;
+            box-shadow: 0 6px 20px rgba(31,43,108,0.06);
+        }
+        .metric-label {
+            font-size: 13px;
+            color: #8891a7;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2b6c;
+        }
+        .metric-value.danger { color: #c0392b; }
+        .groups {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .group-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 22px 24px;
+            box-shadow: 0 6px 20px rgba(31,43,108,0.06);
+        }
+        .group-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1f2b6c;
+        }
+        .subject-row {
+            margin-bottom: 14px;
+            text-decoration: none;
+            display: block;
+            color: inherit;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: background 0.15s;
+        }
+        .subject-row:hover {
+            background: #f4f6fb;
+        }
+        .subject-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13.5px;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .subject-top .pct { color: #8891a7; font-weight: 600; }
+        .subject-top .overdue-tag {
+            color: #c0392b;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .bar-bg {
+            height: 8px;
+            border-radius: 6px;
+            background: #eceff6;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #3a5ba0, #5a8fd6);
+        }
+        .bar-fill.low {
+            background: linear-gradient(90deg, #c0392b, #e0665a);
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div>
+            <h1>9th Class — Course Coverage</h1>
+            <div class="subtitle">{{ total_done }} / {{ total_chapters }} chapters completed</div>
+        </div>
+        <div class="top-actions">
+            <a class="btn btn-ghost" href="{{ url_for('history') }}">History</a>
+            <a class="btn btn-ghost" href="{{ url_for('export_report') }}">Export report</a>
+            <a class="btn btn-primary" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="metrics">
+        <div class="metric-card">
+            <div class="metric-label">Overall coverage</div>
+            <div class="metric-value">{{ overall_pct }}%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Chapters done</div>
+            <div class="metric-value">{{ total_done }} / {{ total_chapters }}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Behind schedule</div>
+            <div class="metric-value {% if behind_count > 0 %}danger{% endif %}">{{ behind_count }} subjects</div>
+        </div>
+    </div>
+
+    <div class="groups">
+        {% for grp in groups %}
+        <div class="group-card">
+            <div class="group-title">{{ grp.name }} group</div>
+            {% for subj in grp.subjects %}
+            <a class="subject-row" href="{{ url_for('subject_view', group_id=grp.id, subject_id=subj.id) }}">
+                <div class="subject-top">
+                    <span>{{ subj.name }}{% if subj.overdue > 0 %}<span class="overdue-tag">{{ subj.overdue }} overdue</span>{% endif %}</span>
+                    <span class="pct">{{ subj.pct }}%</span>
+                </div>
+                <div class="bar-bg">
+                    <div class="bar-fill {% if subj.pct < 50 %}low{% endif %}" style="width: {{ subj.pct }}%;"></div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

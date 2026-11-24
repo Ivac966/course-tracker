@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login — Course Coverage Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1f2b6c 0%, #3a5ba0 50%, #5a8fd6 100%);
+        }
+        .card {
+            background: #fff;
+            width: 360px;
+            padding: 36px 32px;
+            border-radius: 18px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+        }
+        .card h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 4px;
+            color: #1f2b6c;
+        }
+        .card p.sub {
+            font-size: 13px;
+            color: #888;
+            margin: 0 0 24px;
+        }
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #444;
+            display: block;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1.5px solid #e2e5ec;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            margin-bottom: 18px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #3a5ba0;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3a5ba0, #1f2b6c);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        button:hover { opacity: 0.92; }
+        button:active { transform: scale(0.98); }
+        .error {
+            background: #fdeaea;
+            color: #c0392b;
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Course Coverage Tracker</h1>
+        <p class="sub">9th class — admin login</p>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <label>Username</label>
+            <input type="text" name="username" required autofocus>
+            <label>Password</label>
+            <input type="password" name="password" required>
+            <button type="submit">Log in</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Progress History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f2f8;
+            margin: 0;
+            padding: 32px 40px;
+            color: #22263a;
+        }
+        a.back {
+            font-size: 13px;
+            color: #3a5ba0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        h1 {
+            font-size: 21px;
+            font-weight: 600;
+            margin: 10px 0 22px;
+        }
+        .panel {
+            background: #fff;
+            border-radius: 18px;
+            padding: 8px 22px;
+            box-shadow: 0 6px 20px rgba(31,43,108,0.06);
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid #eef0f6;
+            font-size: 13.5px;
+        }
+        .row:last-child { border-bottom: none; }
+        .left { display: flex; flex-direction: column; gap: 3px; }
+        .chapter-line { font-weight: 500; }
+        .meta { font-size: 11.5px; color: #8891a7; }
+        .tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        .tag.completed { background: #e6f6ef; color: #1D9E75; }
+        .tag.unmarked { background: #fdeaea; color: #c0392b; }
+        .empty { color: #a3a9ba; font-size: 13.5px; padding: 14px 0; }
+    </style>
+</head>
+<body>
+    <a class="back" href="{{ url_for('dashboard') }}">&larr; Back to dashboard</a>
+    <h1>Progress history</h1>
+
+    <div class="panel">
+        {% for r in rows %}
+        <div class="row">
+            <div class="left">
+                <span class="chapter-line">{{ r.chapter_name }}</span>
+                <span class="meta">{{ r.subject_name }} — {{ r.group_name }} group · {{ r.action_time }}</span>
+            </div>
+            <span class="tag {{ r.action }}">{{ r.action }}</span>
+        </div>
+        {% else %}
+        <p class="empty">No activity yet.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

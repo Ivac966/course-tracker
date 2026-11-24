@@ -3,79 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ subject.name }} — {{ group.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
+            font-family: 'Poppins', sans-serif;
+            background: #f0f2f8;
             margin: 0;
-            padding: 24px;
-            color: #222;
+            padding: 32px 40px;
+            color: #22263a;
         }
         a.back {
             font-size: 13px;
-            color: #378ADD;
+            color: #3a5ba0;
             text-decoration: none;
+            font-weight: 500;
         }
         h1 {
-            font-size: 20px;
-            margin: 10px 0 20px;
+            font-size: 21px;
+            font-weight: 600;
+            margin: 10px 0 22px;
         }
-        .chapter-list {
+        .panel {
             background: #fff;
-            border-radius: 10px;
-            padding: 8px 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 18px;
+            padding: 8px 22px;
+            box-shadow: 0 6px 20px rgba(31,43,108,0.06);
+            margin-bottom: 20px;
         }
         .chapter-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
+            padding: 14px 0;
+            border-bottom: 1px solid #eef0f6;
         }
-        .chapter-row:last-child {
-            border-bottom: none;
-        }
+        .chapter-row:last-child { border-bottom: none; }
+        .chapter-info { display: flex; flex-direction: column; gap: 3px; }
         .chapter-name {
             font-size: 14px;
+            font-weight: 500;
         }
         .chapter-name.done {
             text-decoration: line-through;
-            color: #888;
+            color: #a3a9ba;
+        }
+        .chapter-meta {
+            font-size: 11.5px;
+            color: #8891a7;
+        }
+        .chapter-meta.overdue {
+            color: #c0392b;
+            font-weight: 600;
         }
         .mark-btn {
-            font-size: 12px;
-            padding: 6px 12px;
-            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 9px;
             border: none;
             cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
         }
+        .mark-btn:active { transform: scale(0.96); }
         .mark-btn.incomplete {
-            background: #378ADD;
+            background: linear-gradient(135deg, #3a5ba0, #1f2b6c);
             color: #fff;
         }
         .mark-btn.complete {
-            background: #e9ecef;
-            color: #333;
+            background: #eceff6;
+            color: #555;
+        }
+        .panel-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8891a7;
+            margin: 14px 0 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
         .add-form {
-            margin-top: 20px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
+            align-items: center;
         }
-        .add-form input {
+        .add-form input[type="text"] {
             flex: 1;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            padding: 10px 14px;
+            border-radius: 9px;
+            border: 1.5px solid #e2e5ec;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13.5px;
         }
-        .add-form button {
-            padding: 8px 16px;
-            border-radius: 6px;
+        .add-form input[type="date"] {
+            padding: 10px 12px;
+            border-radius: 9px;
+            border: 1.5px solid #e2e5ec;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+        }
+        .add-form button, .bulk-form button {
+            padding: 10px 18px;
+            border-radius: 9px;
             border: none;
-            background: #1D9E75;
+            background: linear-gradient(135deg, #1D9E75, #15795a);
             color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
+        }
+        .bulk-form textarea {
+            width: 100%;
+            min-height: 90px;
+            padding: 12px 14px;
+            border-radius: 9px;
+            border: 1.5px solid #e2e5ec;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13.5px;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+        .empty {
+            color: #a3a9ba;
+            font-size: 13.5px;
+            padding: 14px 0;
         }
     </style>
 </head>
@@ -83,10 +137,19 @@
     <a class="back" href="{{ url_for('dashboard') }}">&larr; Back to dashboard</a>
     <h1>{{ subject.name }} — {{ group.name }} group</h1>
 
-    <div class="chapter-list">
+    <div class="panel">
         {% for ch in chapters %}
         <div class="chapter-row">
-            <span class="chapter-name {% if ch.completed %}done{% endif %}">{{ ch.name }}</span>
+            <div class="chapter-info">
+                <span class="chapter-name {% if ch.completed %}done{% endif %}">{{ ch.name }}</span>
+                {% if ch.completed %}
+                <span class="chapter-meta">Completed on {{ ch.completed_date }}</span>
+                {% elif ch.overdue %}
+                <span class="chapter-meta overdue">Overdue — was due {{ ch.deadline }}</span>
+                {% elif ch.deadline %}
+                <span class="chapter-meta">Due {{ ch.deadline }}</span>
+                {% endif %}
+            </div>
             <form method="POST" action="{{ url_for('mark_chapter', group_id=group.id, chapter_id=ch.id) }}">
                 <button type="submit" class="mark-btn {% if ch.completed %}complete{% else %}incomplete{% endif %}">
                     {% if ch.completed %}Completed{% else %}Mark done{% endif %}
@@ -94,14 +157,27 @@
             </form>
         </div>
         {% else %}
-        <p style="color:#888; font-size:14px; padding:12px 0;">No chapters added yet.</p>
+        <p class="empty">No chapters added yet.</p>
         {% endfor %}
     </div>
 
-    <form class="add-form" method="POST" action="{{ url_for('add_chapter', subject_id=subject.id) }}">
-        <input type="hidden" name="group_id" value="{{ group.id }}">
-        <input type="text" name="name" placeholder="New chapter name" required>
-        <button type="submit">Add</button>
-    </form>
+    <div class="panel-title">Add single chapter</div>
+    <div class="panel">
+        <form class="add-form" style="padding: 14px 0;" method="POST" action="{{ url_for('add_chapter', subject_id=subject.id) }}">
+            <input type="hidden" name="group_id" value="{{ group.id }}">
+            <input type="text" name="name" placeholder="Chapter name" required>
+            <input type="date" name="deadline">
+            <button type="submit">Add</button>
+        </form>
+    </div>
+
+    <div class="panel-title">Bulk add chapters (one per line)</div>
+    <div class="panel bulk-form" style="padding: 16px 22px;">
+        <form method="POST" action="{{ url_for('bulk_add_chapters', subject_id=subject.id) }}">
+            <input type="hidden" name="group_id" value="{{ group.id }}">
+            <textarea name="bulk_names" placeholder="Chapter 1&#10;Chapter 2&#10;Chapter 3"></textarea>
+            <button type="submit">Add all</button>
+        </form>
+    </div>
 </body>
 </html>
