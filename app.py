@@ -351,9 +351,11 @@ def export_report():
     )
 
 
+if not os.path.exists(DB_PATH):
+    init_db()
+    with app.app_context():
+        seed_data()
+
+
 if __name__ == "__main__":
-    if not os.path.exists(DB_PATH):
-        init_db()
-        with app.app_context():
-            seed_data()
     app.run(debug=True)
