@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS chapters (
     subject_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     order_num INTEGER NOT NULL,
+    deadline TEXT,
     FOREIGN KEY (subject_id) REFERENCES subjects(id)
 );
 
@@ -30,6 +31,16 @@ CREATE TABLE IF NOT EXISTS progress (
     chapter_id INTEGER NOT NULL,
     completed_date TEXT,
     UNIQUE(group_id, chapter_id),
+    FOREIGN KEY (group_id) REFERENCES groups(id),
+    FOREIGN KEY (chapter_id) REFERENCES chapters(id)
+);
+
+CREATE TABLE IF NOT EXISTS progress_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER NOT NULL,
+    chapter_id INTEGER NOT NULL,
+    action TEXT NOT NULL,
+    action_time TEXT NOT NULL,
     FOREIGN KEY (group_id) REFERENCES groups(id),
     FOREIGN KEY (chapter_id) REFERENCES chapters(id)
 );
